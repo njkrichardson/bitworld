@@ -56,7 +56,7 @@ def _simulate_generation(population: Sequence[Genome], r_0: int = 2, variation: 
     return survivors
 
 def simulate(intial_population: Sequence[Genome], n_generations: int, **kwargs) -> tuple: 
-    history = [] 
+    history, pop_history = [], []
     population = deepcopy(intial_population)
     for t in tqdm(range(n_generations)): 
         population = _simulate_generation(population, **kwargs)
@@ -64,4 +64,6 @@ def simulate(intial_population: Sequence[Genome], n_generations: int, **kwargs) 
             sample_idxs = npr.choice(np.arange(len(population)), replace=False, size=kwargs.get("n_samples", 1))
             for i in sample_idxs: 
                 history.append([t, fitness(population[i], normalized=False)])
-    return np.array(history), population
+            pop_history.append(population)
+
+    return np.array(history), pop_history, population

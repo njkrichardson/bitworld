@@ -1,5 +1,6 @@
 import argparse 
 from functools import partial 
+import pdb 
 
 import matplotlib.pyplot as plt 
 import numpy as np 
@@ -25,10 +26,18 @@ if __name__=="__main__":
     population = create_population(args.n, args.g, params=(args.m * args.g, args.std))
 
     # simulate a timeline with sex/crossover as the variation mechanism 
-    sex_history, sex_final_population = simulate(population, args.t, variation=sex)
+    sex_history, sex_pop_history, sex_final_population = simulate(population, args.t, variation=sex)
+
+    for i, arr in enumerate(sex_pop_history): 
+        if i in [0, 5, 8, 15, 30]: 
+            plot(arr) 
 
     # simulate a timeline with mutation as the variation mechanism 
-    mutation_history, mutation_final_population = simulate(population, args.t, variation=partial(mutate, p_error=args.e))
+    mutation_history, mut_pop_history, mutation_final_population = simulate(population, args.t, variation=partial(mutate, p_error=args.e))
+
+    for i, arr in enumerate(mut_pop_history): 
+        if i in [0, 5, 8, 15, 30]: 
+            plot(arr) 
 
     if args.c is True: 
         # TODO: create cache dir if one does not yet exist (this should really be a parameter to the simulation (not this particular script) 
