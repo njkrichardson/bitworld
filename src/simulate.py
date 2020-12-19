@@ -41,7 +41,7 @@ def _create_from_params(genome_length: int, mean: float, std: float) -> Genome:
         sequence[i] += 1
     return Genome(sequence)
 
-def simulate_generation(population: list, r_0: int = 2, **kwargs): 
+def _simulate_generation(population: list, r_0: int = 2, **kwargs): 
     variation = kwargs.get('variation', mutate) 
     if variation == mutate: 
         children = [[variation(parent, **kwargs) for _ in range(r_0)] for parent in population]
@@ -54,17 +54,12 @@ def simulate_generation(population: list, r_0: int = 2, **kwargs):
     survivors = select(children, int(len(children)/2))
     return survivors
 
-def fitness_over_time(genome_size: int, sample_size: int, initial_population_size: int, params: tuple, n_generations: int, **kwargs):
-    population = create_population(initial_population_size, genome_size, params=params)
-    scatter_samples = [] 
-
+def simulate(population: list, n_generations: int, **kwargs) -> tuple: 
+    history = [] 
     for t in tqdm(range(n_generations)): 
-        population = simulate_generation(population, **kwargs)
-        if t % 1 == 0: 
-            for _ in range(sample_size): 
-                idx = npr.choice(np.arange(len(population)))
-                g = population[idx]
-                scatter_samples.append([t, fitness(g, normalized=False)])
-
-    return np.array(scatter_samples)
-
+        population = _simulate_generation(population, **kwargs)
+        if t % kwargs.get("record_every", 10) == 0: 
+            sample_idxs = npr.choice(np.arange(len(population)), replace=False, size=kwargs.get("n_samples", 1))
+            for i in sample_idxs: 
+                history.append([t, fitness(population[i], normalized=False)])
+    return np.array(history), population 

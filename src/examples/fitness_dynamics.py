@@ -4,8 +4,8 @@ from functools import partial
 import matplotlib.pyplot as plt 
 import numpy as np 
 
-from graphics import mutation_fitness_curve
-from simulate import fitness_over_time
+from graphics import mutation_fitness_curve, plot
+from simulate import create_population, simulate
 from variation import sex 
 
 parser = argparse.ArgumentParser()
@@ -20,7 +20,6 @@ parser.add_argument("--c", action='store_true', help="whether to cache the simul
 args = parser.parse_args() 
 
 if __name__=="__main__": 
-
     # fitness over time 
     sample_size = 6
     params = (args.m * args.g, args.std)
@@ -28,7 +27,11 @@ if __name__=="__main__":
     if args.e is None: 
         p_error = 1/(4 * args.g)
 
-    history = fitness_over_time(args.g, sample_size, args.n, params, args.t, p_error=args.e, variation=sex)
+    # create the initial population 
+    population = create_population(args.n, args.g, params=params)
+    plot(population) 
+    history, final_population = simulate(population, args.t, p_error=args.e, variation=sex)
+    plot(final_population)
 
     if args.c is True: 
         # TODO: create cache dir if one does not yet exist (this should really be a parameter to the simulation (not this particular script) 
@@ -42,6 +45,7 @@ if __name__=="__main__":
     # plt.plot(domain, list(map(theory, domain)), linestyle='--', c='k')
     plt.xlabel('Generation') 
     plt.ylabel('Fitness')
+    plt.xlim(0, args.t)
     plt.ylim(500, 1000)
     plt.show() 
 
