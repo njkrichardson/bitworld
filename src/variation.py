@@ -3,7 +3,10 @@ import numpy.random as npr
 
 from genomics import Genome 
 
-def mutate(genome: Genome, p_error: float) -> Genome: 
+def mutate(genome: Genome, p_error: float = None) -> Genome: 
+    if p_error is None: 
+        g = len(genome.sequence)
+        p_error = 1 / (4 * g) 
     assert 0 <= p_error <= 1, "probability of error must be a float in the interval [0, 1]" 
     mutation = npr.choice([-1, 0], size=len(genome.sequence), p=[p_error, 1 - p_error]) 
     mutated_sequence = abs(genome.sequence + mutation) 

@@ -23,5 +23,7 @@ def plot(genome: Union[Genome, list]):
     plt.show() 
 
 def mutation_fitness_curve(n_generations: int, genome_size: int, p_error: float) -> callable: 
+    if p_error is None: 
+        p_error = 1/(4 * genome_size)
     return lambda x: genome_size* (1/2 + 1/(2 * np.sqrt(p_error * genome_size)) * (1 - np.exp(-2 * p_error * x)))
 

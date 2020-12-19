@@ -6,7 +6,7 @@ import numpy as np
 
 from graphics import mutation_fitness_curve, plot
 from simulate import create_population, simulate
-from variation import sex 
+from variation import sex, mutate
 
 parser = argparse.ArgumentParser()
 parser.add_argument("--n", type=int, default=100, help="number of organisms in the population") 
@@ -20,34 +20,34 @@ parser.add_argument("--c", action='store_true', help="whether to cache the simul
 args = parser.parse_args() 
 
 if __name__=="__main__": 
-    # fitness over time 
-    sample_size = 6
-    params = (args.m * args.g, args.std)
-    
-    if args.e is None: 
-        p_error = 1/(4 * args.g)
 
     # create the initial population 
-    population = create_population(args.n, args.g, params=params)
+    population = create_population(args.n, args.g, params=(args.m * args.g, args.std))
     plot(population) 
-    history, final_population = simulate(population, args.t, p_error=args.e, variation=sex)
-    plot(final_population)
+
+    # simulate a timeline with sex/crossover as the variation mechanism 
+    sex_history, sex_final_population = simulate(population, args.t, variation=sex)
+    plot(sex_final_population)
+
+    # simulate a timeline with mutation as the variation mechanism 
+    mutation_history, mutation_final_population = simulate(population, args.t, variation=partial(mutate, p_error=args.e))
+    plot(mutation_final_population)
 
     if args.c is True: 
         # TODO: create cache dir if one does not yet exist (this should really be a parameter to the simulation (not this particular script) 
         np.save("cache/sex_history.npy", history)
 
-    domain = np.linspace(0, args.g, 1000)
-    theory_ = list(map(partial(mutation_fitness_curve, args.g, args.e), domain))
+    domain = np.linspace(0, args.t, 1000)
+    theory_ = list(map(mutation_fitness_curve(args.t, args.g, args.e), domain))
 
     plt.figure() 
-    plt.scatter(history[:, 0], history[:, 1], marker='+', c='k')
-    # plt.plot(domain, list(map(theory, domain)), linestyle='--', c='k')
+    plt.scatter(sex_history[:, 0], sex_history[:, 1], marker='+', c='g', label='sex/crossover')
+    plt.scatter(mutation_history[:, 0], mutation_history[:, 1], marker='+', c='b', label='mutation')
+    plt.plot(domain, theory_, linestyle='--', c='k', label="theoretical rate")
     plt.xlabel('Generation') 
     plt.ylabel('Fitness')
     plt.xlim(0, args.t)
-    plt.ylim(500, 1000)
+    plt.ylim(args.m * args.g - 1, args.g + 1)
+    plt.legend() 
     plt.show() 
-
-
 

@@ -1,4 +1,4 @@
-import pdb 
+from copy import deepcopy
 from random import shuffle
 
 import matplotlib.pyplot as plt 
@@ -41,24 +41,24 @@ def _create_from_params(genome_length: int, mean: float, std: float) -> Genome:
         sequence[i] += 1
     return Genome(sequence)
 
-def _simulate_generation(population: list, r_0: int = 2, **kwargs): 
-    variation = kwargs.get('variation', mutate) 
-    if variation == mutate: 
-        children = [[variation(parent, **kwargs) for _ in range(r_0)] for parent in population]
-    elif variation == sex: 
+def _simulate_generation(population: list, r_0: int = 2, variation: callable = sex, **kwargs): 
+    if variation == sex: 
         shuffle(population) 
         children = [] 
         for i in range(0, len(population)-1, 2): 
             children.append(variation((population[i], population[i+1])))
+    else: 
+        children = [[variation(parent, **kwargs) for _ in range(r_0)] for parent in population]
     children = [child for kids in children for child in kids]
     survivors = select(children, int(len(children)/2))
     return survivors
 
-def simulate(population: list, n_generations: int, **kwargs) -> tuple: 
+def simulate(intial_population: list, n_generations: int, **kwargs) -> tuple: 
     history = [] 
+    population = deepcopy(intial_population)
     for t in tqdm(range(n_generations)): 
         population = _simulate_generation(population, **kwargs)
-        if t % kwargs.get("record_every", 10) == 0: 
+        if t % kwargs.get("record_every", 1) == 0: 
             sample_idxs = npr.choice(np.arange(len(population)), replace=False, size=kwargs.get("n_samples", 1))
             for i in sample_idxs: 
                 history.append([t, fitness(population[i], normalized=False)])
