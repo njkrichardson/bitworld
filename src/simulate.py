@@ -1,5 +1,7 @@
 from copy import deepcopy
 from random import shuffle
+import typing 
+from typing import Sequence 
 
 import matplotlib.pyplot as plt 
 import numpy as np 
@@ -10,7 +12,7 @@ from genomics import Genome
 from variation import mutate, sex
 from analysis import fitness
 
-def select(population: list, n_survivors: int) -> list: 
+def select(population: Sequence[Genome], n_survivors: int) -> list: 
     assert n_survivors <= len(population), "number of survivors cannot exceed the population size"
     return sorted(population, key=lambda genome: fitness(genome))[-n_survivors:]
 
@@ -41,7 +43,7 @@ def _create_from_params(genome_length: int, mean: float, std: float) -> Genome:
         sequence[i] += 1
     return Genome(sequence)
 
-def _simulate_generation(population: list, r_0: int = 2, variation: callable = sex, **kwargs): 
+def _simulate_generation(population: Sequence[Genome], r_0: int = 2, variation: callable = sex, **kwargs): 
     if variation == sex: 
         shuffle(population) 
         children = [] 
@@ -53,7 +55,7 @@ def _simulate_generation(population: list, r_0: int = 2, variation: callable = s
     survivors = select(children, int(len(children)/2))
     return survivors
 
-def simulate(intial_population: list, n_generations: int, **kwargs) -> tuple: 
+def simulate(intial_population: Sequence[Genome], n_generations: int, **kwargs) -> tuple: 
     history = [] 
     population = deepcopy(intial_population)
     for t in tqdm(range(n_generations)): 
@@ -62,4 +64,4 @@ def simulate(intial_population: list, n_generations: int, **kwargs) -> tuple:
             sample_idxs = npr.choice(np.arange(len(population)), replace=False, size=kwargs.get("n_samples", 1))
             for i in sample_idxs: 
                 history.append([t, fitness(population[i], normalized=False)])
-    return np.array(history), population 
+    return np.array(history), population

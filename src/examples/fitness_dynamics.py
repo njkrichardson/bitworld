@@ -23,24 +23,29 @@ if __name__=="__main__":
 
     # create the initial population 
     population = create_population(args.n, args.g, params=(args.m * args.g, args.std))
-    plot(population) 
 
     # simulate a timeline with sex/crossover as the variation mechanism 
     sex_history, sex_final_population = simulate(population, args.t, variation=sex)
-    plot(sex_final_population)
 
     # simulate a timeline with mutation as the variation mechanism 
     mutation_history, mutation_final_population = simulate(population, args.t, variation=partial(mutate, p_error=args.e))
-    plot(mutation_final_population)
 
     if args.c is True: 
         # TODO: create cache dir if one does not yet exist (this should really be a parameter to the simulation (not this particular script) 
         np.save("cache/sex_history.npy", history)
 
+    # initial population versus final population 
+    fig, (mutate_ax, sex_ax)= plt.subplots(nrows=2, ncols=2, num=1) 
+    plot(population, ax=mutate_ax[0], title='Initial Population', display=False)
+    plot(population, ax=sex_ax[0], title='Initial Population', display=False)
+    plot(mutation_final_population, ax=mutate_ax[1], title='mutation', display=False)
+    plot(sex_final_population, ax=sex_ax[1], title='sex', display=False)
+
+    # fitness versus generation index 
     domain = np.linspace(0, args.t, 1000)
     theory_ = list(map(mutation_fitness_curve(args.t, args.g, args.e), domain))
 
-    plt.figure() 
+    plt.figure(2) 
     plt.scatter(sex_history[:, 0], sex_history[:, 1], marker='+', c='g', label='sex/crossover')
     plt.scatter(mutation_history[:, 0], mutation_history[:, 1], marker='+', c='b', label='mutation')
     plt.plot(domain, theory_, linestyle='--', c='k', label="theoretical rate")

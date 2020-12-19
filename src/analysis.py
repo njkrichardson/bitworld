@@ -1,6 +1,9 @@
+import typing 
+from typing import Sequence 
+
 import numpy as np 
 
-from genomics import Genome 
+from genomics import Genome
 
 def fitness(genome: Genome, normalized: bool = True) -> int: 
     if normalized is True: 
@@ -8,6 +11,6 @@ def fitness(genome: Genome, normalized: bool = True) -> int:
     else: 
         return np.sum(genome.sequence) 
 
-def compute_population_statistics(population: list) -> tuple: 
+def compute_population_statistics(population: Sequence[Genome]) -> tuple: 
     fitnesses = np.array([fitness(organism) for organism in population])
     return (fitnesses.mean(), fitnesses.std())
