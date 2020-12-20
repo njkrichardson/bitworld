@@ -5,8 +5,8 @@ Bitworld is a collection of Python modules which enable the simulation and analy
 ## Contents
  
 ### Background 
-* Information acquisition and evolution
-* Evolution of genetic systems for computer scientists 
+* [Information acquisition and evolution](#-information-acquisition-and-evolution)
+* [Evolution of genetic systems for computer scientists](#-evolution-of-genetic-systems-for-computer-scientists) 
 
 ### Bitworld
 * Installation and Quickstart 
