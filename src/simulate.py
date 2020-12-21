@@ -56,9 +56,10 @@ def _simulate_generation(population: Sequence[Genome], r_0: int = 2, variation: 
             children.append(variation((population[i], population[i+1])))
         children = flatten(children)
     else: 
-        for parent in population: 
-            for _ in range(r_0): 
+        for _ in range(r_0): 
+            for parent in population: 
                 children.append(variation(parent, **kwargs))
+        shuffle(children)
     survivors = select(children, int(len(children)/2))
     return survivors
 
