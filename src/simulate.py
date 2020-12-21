@@ -1,4 +1,5 @@
 from copy import deepcopy
+import pdb
 from random import shuffle
 import typing 
 from typing import Sequence 
@@ -44,20 +45,22 @@ def _create_from_params(genome_length: int, mean: float, std: float) -> Genome:
     return Genome(sequence)
 
 def _simulate_generation(population: Sequence[Genome], r_0: int = 2, variation: callable = sex, **kwargs): 
+    children = [] 
     if variation == sex: 
         shuffle(population) 
-        children = [] 
         for i in range(0, len(population)-1, 2): 
             children.append(variation((population[i], population[i+1])))
+        children = [child for kids in children for child in kids]
     else: 
-        children = [[variation(parent, **kwargs) for _ in range(r_0)] for parent in population]
-    children = [child for kids in children for child in kids]
+        for parent in population: 
+            for _ in range(r_0): 
+                children.append(variation(parent, **kwargs))
     survivors = select(children, int(len(children)/2))
     return survivors
 
-def simulate(intial_population: Sequence[Genome], n_generations: int, **kwargs) -> tuple: 
+def simulate(initial_population: Sequence[Genome], n_generations: int, **kwargs) -> tuple: 
     history, pop_history = [], []
-    population = deepcopy(intial_population)
+    population = deepcopy(initial_population)
     for t in tqdm(range(n_generations)): 
         population = _simulate_generation(population, **kwargs)
         if t % kwargs.get("record_every", 1) == 0: 

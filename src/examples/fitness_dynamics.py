@@ -33,6 +33,7 @@ if __name__=="__main__":
     sex_history, sex_pop_history, sex_final_population = simulate(population, args.t, variation=sex)
 
     # simulate a timeline with mutation as the variation mechanism 
+    pdb.set_trace()
     mutation_history, mut_pop_history, mutation_final_population = simulate(population, args.t, variation=partial(mutate, p_error=args.e))
 
     # cache the simulation results (optional) 
