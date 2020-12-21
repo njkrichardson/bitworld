@@ -1,4 +1,5 @@
 from copy import deepcopy
+from itertools import chain
 import pdb
 from random import shuffle
 import typing 
@@ -12,6 +13,9 @@ from tqdm import tqdm
 from genomics import Genome
 from variation import mutate, sex
 from analysis import fitness
+
+def flatten(l: list) -> list: 
+    return list(chain(*l))
 
 def select(population: Sequence[Genome], n_survivors: int) -> list: 
     assert n_survivors <= len(population), "number of survivors cannot exceed the population size"
@@ -50,7 +54,7 @@ def _simulate_generation(population: Sequence[Genome], r_0: int = 2, variation: 
         shuffle(population) 
         for i in range(0, len(population)-1, 2): 
             children.append(variation((population[i], population[i+1])))
-        children = [child for kids in children for child in kids]
+        children = flatten(children)
     else: 
         for parent in population: 
             for _ in range(r_0): 
