@@ -81,7 +81,7 @@ Even after 50 generations, the population which introduces genetic variation in 
   <img src="https://github.com/njkrichardson/bitworld/blob/master/figs/full_simulation.png" alt="drawing" width="500"/>
 </p>
 
-Finally, we can plot the history of the simulation, specifically the average fitness of the population versus the number of simulated generations. It is clear to see that the population which introduces variation through sex/crossover, the genome is acquiring information at a much more rapid rate. 
+Finally, we can plot the history of the simulation, specifically the average fitness of the population versus the number of simulated generations. The genome acquires information at a significantly higher rate when variation is introduced via sex/crossover.
 
 <p align="center">
   <img src="https://github.com/njkrichardson/bitworld/blob/master/figs/fitness_v_generation.png" alt="drawing" width="600"/>
